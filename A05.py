@@ -1,12 +1,6 @@
-# ------------------------------------------------------------------------------------------ #
-# Title: Assignment05
-# Desc: This assignment demonstrates using dictionaries, files, and exception handling
-# Change Log: (Who, When, What)
-#   RRoot,1/1/2030,Created Script
-#   Sabrina Fechtner, 11/8/2023, Wrote Code
-# ------------------------------------------------------------------------------------------ #
+import json
+from typing import TextIO
 
-# Define the Data Constants
 MENU: str = """
 ---- Course Registration Program ----
   Select from the following menu:  
@@ -22,17 +16,14 @@ FILE_NAME: str = "Enrollments.JSON"
 student_first_name: str = ""
 student_last_name: str = ""
 course_name: str = ""
-student_data: list= ""
-import json
-from typing import TextIO
-file:TextIO = None
+student_data: dict = None
+file: TextIO = None
 menu_choice: str
 
-#Inserting Data into JSON file so there is no error
-
-student1: dict[str, str, str] = {"student_first_name": "Bob","student_last_name": "Ross", "course_name": "Painting 101"}
-student2: dict[str, str, str] = {"student_first_name": "Issac", "student_last_name": "Newton", "course_name":"Physics 500"}
-students: list[dict[str,str,str]] = [student1, student2]
+# Inserting Data into JSON file so there is no error
+student1: dict = {"student_first_name": "Bob", "student_last_name": "Ross", "course_name": "Painting 101"}
+student2: dict = {"student_first_name": "Isaac", "student_last_name": "Newton", "course_name": "Physics 500"}
+students: list[dict] = [student1, student2]
 
 file = open(FILE_NAME, "w")
 json.dump(students, file)
@@ -45,37 +36,55 @@ while True:
     menu_choice = input("What would you like to do: ")
 
     # Input user data
-    if menu_choice == "1":  # This will not work if it is an integer!
-        student_first_name = input("Enter the student's first name: ")
-        student_last_name = input("Enter the student's last name: ")
+    if menu_choice == "1":
+        while True:
+            try:
+                student_first_name = input("Enter the student's first name: ")
+                if not student_first_name.isalpha():
+                    raise ValueError("The first name cannot be alphanumeric. Please re-enter the first name.")
+                break
+            except ValueError as e:
+                print(e)
+        while True:
+            try:
+                student_last_name = input("Enter the student's last name: ")
+                if not student_last_name.isalpha():
+                    raise ValueError("The last name cannot be alphanumeric. Please re-enter the last name.")
+                break
+            except ValueError as e:
+                print(e)
         course_name = input("Please enter the name of the course: ")
-        student_data = {"student_first_name": student_first_name, "student_last_name": student_last_name, "course": course_name}
-
+        student_data = {"student_first_name": student_first_name, "student_last_name": student_last_name,
+                    "course": course_name}
         continue
 
     # Present the current data
     elif menu_choice == "2":
         print("\nThe current data is:")
         for item in students:
-            print(student_data)
+            print(item)
         continue
 
     # Save the data to a file
     elif menu_choice == "3":
-        file = open(FILE_NAME, "r")
-        student = json.dump(student_data, file)
-        file.close()
-
-        print(
-            f"You have registered and saved all data input."
-        )
-        continue
-
+            def write_to_file(data, filename):
+            try:
+                with open(filename, 'a') as file:
+                    json.dump(data, file)
+                    file.write('\n')  
+                print("Data successfully written to the file.")
+            except (FileNotFoundError, IOError) as e:
+                print(f"Error writing to the file: {e}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+            continue
+        
     # Stop the loop
     elif menu_choice == "4":
         break  # out of the loop
 
     else:
-        print("Please only choose option 1, 2, or 3")
+        print("Please only choose option 1, 2, 3, or 4")
 
 print("Program Ended")
+ 
