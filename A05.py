@@ -51,11 +51,6 @@ while True:
         course_name = input("Please enter the name of the course: ")
         student_data = {"student_first_name": student_first_name, "student_last_name": student_last_name, "course": course_name}
 
-        file = open(FILE_NAME, "w")
-        for student in students:
-            file.write(f'{student[student_first_name]}, {student[student_last_name]}, {student[course_name]}\n')
-            file.close()
-
         continue
 
     # Present the current data
@@ -68,7 +63,7 @@ while True:
     # Save the data to a file
     elif menu_choice == "3":
         file = open(FILE_NAME, "r")
-        student = json.dump(students, file)
+        student = json.dump(student_data, file)
         file.close()
 
         print(
