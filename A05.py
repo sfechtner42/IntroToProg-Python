@@ -1,3 +1,14 @@
+# ------------------------------------------------------------------------------------------ #
+# Title: Assignment05
+# Desc: This assignment demonstrates using dictionaries, files, and exception handling
+# Change Log: (Who, When, What)
+#   RRoot,1/1/2030,Created Script
+#   Sabrina Fechtner, 11/8/2023, Wrote Pseudocode
+#   Sabrina Fechtner, 11/9/2023, Finished Writing Intial Code
+#   Sabrina Fechtner, 11/10/2023, Added Exceptions
+# ------------------------------------------------------------------------------------------ #
+
+# Define the Data Constants
 import json
 from typing import TextIO
 
@@ -19,15 +30,7 @@ course_name: str = ""
 student_data: dict = None
 file: TextIO = None
 menu_choice: str
-
-# Inserting Data into JSON file so there is no error
-student1: dict = {"student_first_name": "Bob", "student_last_name": "Ross", "course_name": "Painting 101"}
-student2: dict = {"student_first_name": "Isaac", "student_last_name": "Newton", "course_name": "Physics 500"}
-students: list[dict] = [student1, student2]
-
-file = open(FILE_NAME, "w")
-json.dump(students, file)
-file.close()
+students: list[dict] = []
 
 # Present and Process the data
 while True:
@@ -55,7 +58,8 @@ while True:
                 print(e)
         course_name = input("Please enter the name of the course: ")
         student_data = {"student_first_name": student_first_name, "student_last_name": student_last_name,
-                    "course": course_name}
+                        "course": course_name}
+        students.append(student_data)
         continue
 
     # Present the current data
@@ -67,18 +71,20 @@ while True:
 
     # Save the data to a file
     elif menu_choice == "3":
-            def write_to_file(data, filename):
-            try:
-                with open(filename, 'a') as file:
-                    json.dump(data, file)
-                    file.write('\n')  
-                print("Data successfully written to the file.")
-            except (FileNotFoundError, IOError) as e:
-                print(f"Error writing to the file: {e}")
-            except Exception as e:
-                print(f"An unexpected error occurred: {e}")
-            continue
-        
+        try:
+            with open(FILE_NAME, 'w') as file:
+                json.dump(students, file)
+                file.write('\n')
+            print("Data successfully written to the file.")
+        except (FileNotFoundError, IOError) as e:
+            print(f"Error writing to the file: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+        finally:
+            if file and not file.closed:
+                file.close()
+        continue
+
     # Stop the loop
     elif menu_choice == "4":
         break  # out of the loop
@@ -87,4 +93,3 @@ while True:
         print("Please only choose option 1, 2, 3, or 4")
 
 print("Program Ended")
- 

@@ -1,27 +1,99 @@
+import json
+from typing import TextIO
+
+MENU: str = """
+---- Course Registration Program ----
+  Select from the following menu:  
+    1. Register a Student for a Course.
+    2. Show current data.  
+    3. Save data to a file.
+    4. Exit the program.
+----------------------------------------- 
+"""
+FILE_NAME: str = "Enrollments.JSON"
+
+# Define the Data Variables
 student_first_name: str = ""
 student_last_name: str = ""
 course_name: str = ""
-csv_data: str = ""
-file = None
-import json
-file_obj: None
+student_data: dict = None
+file: TextIO = None
 menu_choice: str
-FILE_NAME: str = "Enrollments.JSON"
-#Inserting Data into JSON file so there is no error
+students: list[dict]
 
-student1: dict[str, str, str] = {"student_first_name": "Bob","student_last_name": "Ross", "course_name": "Painting 101"}
-student2: dict[str, str, str] = {"student_first_name": "Issac", "student_last_name": "Newton", "course_name":"Physics 500"}
-students: list[dict[str,str,str]] = [student1, student2]
+# Present and Process the data
+while True:
+    # Present the menu of choices
+    print(MENU)
+    menu_choice = input("What would you like to do: ")
 
-file = open(FILE_NAME, "w")
-json.dump(students, file)
-file.close()
+# Try reading existing data first
+    try:
+        with open(FILE_NAME, 'r') as file:
+            students = json.load(file)
+            print("Data successfully loaded from the file:", students)
+    except FileNotFoundError as e:
+        print(f"File not found, creating it...")
+        students = []
+    except Exception as e:
+        print(f"An unexpected error occurred while loading data: {e}")
+        students = []
+    finally:
+        if file and not file.close():
+            file.close()
 
-student_first_name = input("Enter the student's first name: ")
-student_last_name = input("Enter the student's last name: ")
-course_name = input("Please enter the name of the course: ")
-student_data = {"student_first_name": student_first_name, "student_last_name": student_last_name, "course": course_name}
+    # Input user data
+    if menu_choice == "1":
+        while True:
+            try:
+                student_first_name = input("Enter the student's first name: ")
+                if not student_first_name.isalpha():
+                    raise ValueError("The first name cannot be alphanumeric. Please re-enter the first name.")
+                break
+            except ValueError as e:
+                print(e)
+        while True:
+            try:
+                student_last_name = input("Enter the student's last name: ")
+                if not student_last_name.isalpha():
+                    raise ValueError("The last name cannot be alphanumeric. Please re-enter the last name.")
+                break
+            except ValueError as e:
+                print(e)
+        course_name = input("Please enter the name of the course: ")
+        student_data = {"student_first_name": student_first_name, "student_last_name": student_last_name,
+                        "course": course_name}
+        students.append(student_data)
+        continue
 
-file = open(FILE_NAME, "r")
-json.dump(student_data, file)
-file.close()
+    # Present the current data
+    elif menu_choice == "2":
+        print("\nThe current data is:")
+        for item in students:
+            print(item)
+        continue
+
+    # Save the data to a file
+    elif menu_choice == "3":
+        try:
+            with open(FILE_NAME, 'w') as file:
+                json.dump(students, file)
+                #file.write('\n')
+            print("Data successfully written to the file.")
+        except (FileNotFoundError, IOError) as e:
+            print(f"Error writing to the file: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+        finally:
+            if file and not file.closed:
+                file.close()
+        continue
+
+    # Stop the loop
+    elif menu_choice == "4":
+        break  # out of the loop
+
+    else:
+        print("Please only choose option 1, 2, 3, or 4")
+
+print("Program Ended")
