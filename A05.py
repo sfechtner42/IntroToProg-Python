@@ -32,11 +32,31 @@ file: TextIO = None
 menu_choice: str
 students: list[dict] = []
 
+# Try reading existing data first
+try:
+    with open(FILE_NAME, "r") as file:
+        students = json.load(file)
+    print("Data successfully loaded from the file.")
+except FileNotFoundError as e:
+    print(f"File not found, creating it...")
+    students = []
+    with open(FILE_NAME, "w") as file:
+        json.dump(students, file)
+except json.JSONDecodeError as e:
+    print(f"Invalid JSON file: {e}. Resetting it...")
+    students = []
+except Exception as e:
+    print(f"An unexpected error occurred while loading data: {e}")
+    students = []
+finally:
+    if 'file' in locals() and not file.closed:
+        file.close()
+
 # Present and Process the data
 while True:
     # Present the menu of choices
     print(MENU)
-    menu_choice = input("What would you like to do: ")
+    menu_choice = input("What would you like to do?: ")
 
     # Input user data
     if menu_choice == "1":
