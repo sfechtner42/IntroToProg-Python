@@ -49,7 +49,7 @@ except Exception as e:
     print(f"An unexpected error occurred while loading data: {e}")
     students = []
 finally:
-    if 'file' in locals() and not file.closed:
+    if file and not file.closed:
         file.close()
 
 # Present and Process the data
